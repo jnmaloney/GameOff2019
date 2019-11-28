@@ -18,6 +18,8 @@ public:
   virtual void init2() {}
 
   virtual int keyCallback(int key, int scancode, int action, int mods) { return 0; }
+  //virtual int gamepadCallback(int eventType, const EmscriptenGamepadEvent *gamepadEvent, void *userData) { return 0; }
+  virtual int gamepadUpdate(double x, double y, int a, int b) { return 0; }
 
   virtual int update(double dt) { return 0; }
 
@@ -35,6 +37,9 @@ public:
   virtual void draw(RenderSystem* rs, float timer) {} // ??
 
   void setValueTable(StateValueTable* valuesPtr) { mStateValues = valuesPtr; }
+
+  virtual void prestart(RenderSystem* rs) {}
+
 
 protected:
 

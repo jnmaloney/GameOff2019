@@ -18,11 +18,13 @@ public:
   State() {}
   ~State() {}
 
+
   void addElement(StateElement* i)
   {
     mElements.push_back(i);
     i->setValueTable(&mValues);
   }
+
 
   void keyCallback(int key, int scancode, int action, int mods)
   {
@@ -33,6 +35,25 @@ public:
     }
   }
 
+
+  // void gamepadCallback(int eventType, const EmscriptenGamepadEvent *gamepadEvent, void *userData)
+  // {
+  //   auto i = mElements.begin();
+  //   while (i != mElements.end() && (*i)->gamepadCallback(eventType, gamepadEvent, userData) == 0)
+  //   {
+  //     ++i;
+  //   }
+  // }
+  void gamepadUpdate(double x, double y, int a, int b)
+  {
+    auto i = mElements.begin();
+    while (i != mElements.end() && (*i)->gamepadUpdate(x, y, a, b) == 0)
+    {
+      ++i;
+    }
+  }
+
+
   void update(double dt)
   {
     auto i = mElements.begin();
@@ -41,6 +62,7 @@ public:
       ++i;
     }
   }
+
 
   void drawUI()
   {
@@ -74,6 +96,15 @@ public:
   }
 
 
+  void prestart(RenderSystem* rs)
+  {
+    for (auto i = mElements.begin(); i != mElements.end(); ++i)
+    {
+      (*i)->prestart(rs);
+    }
+  }
+
+
   virtual void draw(RenderSystem* rs, float timer)
   {
     for (auto i = mElements.begin(); i != mElements.end(); ++i)
@@ -81,6 +112,7 @@ public:
       (*i)->draw(rs, timer);
     }
   } // ??
+
 
 
 protected:

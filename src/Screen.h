@@ -23,7 +23,11 @@ public:
 
   virtual void draw(RenderSystem* rs, float timer) {}
   virtual int keyCallback(int key, int scancode, int action, int mods) { return 0; }
-  
+  virtual int gamepadUpdate(double x, double y, int a, int b) { return 0; }
+
+
+  virtual void prestart(RenderSystem* rs) {}
+
 protected:
 
   std::vector<RenderQueue> m_renderQueues;

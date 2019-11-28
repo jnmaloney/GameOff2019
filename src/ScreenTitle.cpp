@@ -1,6 +1,7 @@
 #include "ScreenTitle.h"
 #include "RenderSystem.h"
 #include "imgui.h"
+#include "WindowManager.h"
 
 
 ScreenTitle::ScreenTitle()
@@ -56,6 +57,26 @@ int ScreenTitle::keyCallback(int key, int scancode, int action, int mods)
 }
 
 
+int ScreenTitle::gamepadUpdate(double x, double y, int a, int b)
+{
+  if (a)
+  {
+    setAdvanceMessage();
+  }
+
+  if (b) // stop fast toggle
+  {
+    mInfo = mNotInfo;
+  }
+  else
+  {
+    mNotInfo = !mInfo;
+  }
+
+  return 0;
+}
+
+
 int ScreenTitle::drawUI()
 {
   ImGuiIO& io = ImGui::GetIO();
@@ -84,12 +105,14 @@ int ScreenTitle::drawUI()
   else
   {
     ImVec2 pos(180.f, 180.f);
+    pos.x = 0.5 * (WindowManager::getInstance()->width - 175 * 4);
+    pos.y = 0.333 * WindowManager::getInstance()->height - 0.5 * 56 * 4;
     ImVec2 pivot(0, 0);
     ImGui::SetNextWindowPos(pos, 0, pivot);
     ImGui::SetNextWindowSize(ImVec2(980, 526));
     ImGui::Begin("Screen1", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
-    ImGui::Image((ImTextureID)mTexTitle.getID(), ImVec2(310 * 2, 99 * 2), ImVec2(0,0), ImVec2(1,1), ImColor(255,255,255,255), ImColor(255,255,255,128));
+    ImGui::Image((ImTextureID)mTexTitle.getID(), ImVec2(175 * 4, 56 * 4), ImVec2(0,0), ImVec2(1,1), ImColor(255,255,255,255), ImColor(255,255,255,128));
 
     ImGui::Text("    [X]  Start");
     ImGui::Text("    [Z]  About");

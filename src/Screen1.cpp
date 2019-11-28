@@ -118,74 +118,79 @@ void Screen1::draw(RenderSystem* rs, float dt)
   //
   // Player values: transfer from State to PlayerController
   //
-  if (mStateValues->getValue("grounded").flags == 1)
+  //if (mStateValues->getValue("grounded").flags == 1)
+  // {
+  //   mPlayerController.mJumping = false;
+  //   mPlayerController.mFalling = false;
+  //   // mPlayerController.mWallLeft = false;
+  //   // mPlayerController.mWallRight = false;
+  // }
+  //else  /* ? */ //if (!(mPlayerController.mWallGrip))
   {
-    mPlayerController.mJumping = false;
-    mPlayerController.mFalling = false;
-    mPlayerController.mWallLeft = false;
-    mPlayerController.mWallRight = false;
-  }
-  else  /* ? */ if (!(mPlayerController.mWallGrip))
-  {
-    if (mLevel.mPhysicsLevel.getDynamicYDir() < 0)
+    if (mLevel.mPhysicsLevel.getDynamicYDir() < -0.1)
     {
       mPlayerController.mJumping = true;
       mPlayerController.mFalling = false;
     }
-    else
+    else if (mLevel.mPhysicsLevel.getDynamicYDir() > 0.1)
     {
       mPlayerController.mJumping = false;
       mPlayerController.mFalling = true;
     }
-  }
-
-  if (mStateValues->getValue("wall right").flags == 1)
-  {
-    // Grab wall, if hit wall while in air
-    if (mPlayerController.mWallRight == false && !mPlayerController.m_cannonAction)
+    else
     {
-      if (mPlayerController.mJumping || mPlayerController.mFalling)
-      {
-        mPlayerController.mWallGrip = true;
-        mPlayerController.mJumping = false;
-        mPlayerController.mFalling = false;
-        mPlayerController.forceFaceRight();
-        // mPlayerController.moveRight();        // !
-        // mPlayerController.moveLeft2();        // !
-        // mPlayerController.moveRight2();        // !
-      }
+      mPlayerController.mJumping = false;
+      mPlayerController.mFalling = false;
     }
-
-    mPlayerController.mWallRight = true;
-  }
-  else
-  {
-    mPlayerController.mWallRight = false;
   }
 
-  if (mStateValues->getValue("wall left").flags == 1)
-  {
-    // Grab wall, if hit wall while in air
-    if (mPlayerController.mWallLeft == false && !mPlayerController.m_cannonAction)
-    {
-      if (mPlayerController.mJumping || mPlayerController.mFalling)
-      {
-        mPlayerController.mWallGrip = true;
-        mPlayerController.mJumping = false;
-        mPlayerController.mFalling = false;
-        mPlayerController.forceFaceLeft();
-        // mPlayerController.moveLeft();                // !
-        // mPlayerController.moveRight2();                // !
-        // mPlayerController.moveLeft2();                // !
-      }
-    }
-
-    mPlayerController.mWallLeft = true;
-  }
-  else
-  {
-    mPlayerController.mWallLeft = false;
-  }
+  // if (mStateValues->getValue("wall right").flags == 1)
+  // {
+  //   // // Grab wall, if hit wall while in air
+  //   // if (mPlayerController.mWallRight == false && !mPlayerController.m_cannonAction)
+  //   // {
+  //   //   if (mPlayerController.mJumping || mPlayerController.mFalling)
+  //   //   {
+  //   //     mPlayerController.mWallGrip = true;
+  //   //     mPlayerController.mJumping = false;
+  //   //     mPlayerController.mFalling = false;
+  //   //     mPlayerController.forceFaceRight();
+  //   //     // mPlayerController.moveRight();        // !
+  //   //     // mPlayerController.moveLeft2();        // !
+  //   //     // mPlayerController.moveRight2();        // !
+  //   //   }
+  //   // }
+  //
+  //   mPlayerController.mWallRight = true;
+  // }
+  // else
+  // {
+  //   mPlayerController.mWallRight = false;
+  // }
+  //
+  // if (mStateValues->getValue("wall left").flags == 1)
+  // {
+  //   // // Grab wall, if hit wall while in air
+  //   // if (mPlayerController.mWallLeft == false && !mPlayerController.m_cannonAction)
+  //   // {
+  //   //   if (mPlayerController.mJumping || mPlayerController.mFalling)
+  //   //   {
+  //   //     mPlayerController.mWallGrip = true;
+  //   //     mPlayerController.mJumping = false;
+  //   //     mPlayerController.mFalling = false;
+  //   //     mPlayerController.forceFaceLeft();
+  //   //     // mPlayerController.moveLeft();                // !
+  //   //     // mPlayerController.moveRight2();                // !
+  //   //     // mPlayerController.moveLeft2();                // !
+  //   //   }
+  //   // }
+  //
+  //   mPlayerController.mWallLeft = true;
+  // }
+  // else
+  // {
+  //   mPlayerController.mWallLeft = false;
+  // }
 
   //
   // Physic World update
@@ -263,26 +268,12 @@ void Screen1::draw(RenderSystem* rs, float dt)
       // {
       //   mLevel.mPhysicsLevel.addDynamicImpulse(d, 0);
       // }
+
       int mode = mPlayerController.m_freeContinueFloat ? 2 : 0;
       mLevel.mPhysicsLevel.addDynamicImpulse(d, mode);
-    }
-  }
 
-  //
-  // Player Controls (Action)
-  //
-  if (mPlayerController.m_actionCharge)
-  {
-    if (mPlayerController.m_actionChargeLeft && !mPlayerController.m_actionChargeRight)
-    {
-      mPlayerController.actionDir -= 270.0 * dt;
+      //mLevel.mPhysicsLevel.addDynamicImpulse(d, 0);
     }
-    if (mPlayerController.m_actionChargeRight && !mPlayerController.m_actionChargeLeft)
-    {
-      mPlayerController.actionDir += 270.0 * dt;
-    }
-    if (mPlayerController.actionDir < -81.0f) mPlayerController.actionDir = -81.f;
-    if (mPlayerController.actionDir >  81.0f) mPlayerController.actionDir =  81.f;
   }
 
   //
@@ -315,11 +306,17 @@ void Screen1::draw(RenderSystem* rs, float dt)
     cameraDir = (maxl / l) * cameraDir;
   mCameraPos += cameraDir;
 
-  // Set camera and render
-  rs->setCameraPos(
-    glm::vec3(mCameraPos.x, mCameraPos.y, 200),
-    glm::vec3(mCameraPos.x, mCameraPos.y, 0),
-    glm::vec3(0, 1, 0));
+  mCameraPos2 = 0.9f * mCameraPos + 0.1f * glm::vec3(x, y - 16, 0);
+
+  // Camera pos
+  // rs->setCameraPos(
+  //   glm::vec3(mCameraPos2.x, mCameraPos2.y, 200),
+  //   glm::vec3(mCameraPos2.x, mCameraPos2.y, 0),
+  //   glm::vec3(0, 1, 0));
+
+  // Render
+  mTexBack.bind();
+  m_renderQueues[3].draw(rs);
 
   mTexGround.bind();
   m_renderQueues[0].draw(rs, x, y);
@@ -331,6 +328,198 @@ void Screen1::draw(RenderSystem* rs, float dt)
   m_renderQueues[2].draw(rs);
 
   mPlayerController.draw(rs, dt);
+
+
+  //
+  // Manifold Contact Points
+  //
+  if (PhysicsLevel2D::contactLeft[0] - y <= -6 && PhysicsLevel2D::contactLeft[1] - y >= 8)
+  {
+    if (mPlayerController.mClearWallLeft && !mPlayerController.m_cannonAction && (mPlayerController.mFalling || mPlayerController.mJumping))
+    {
+      //std::cout <<"Grip Left " << PhysicsLevel2D::contactLeft[0] - y << " "  << PhysicsLevel2D::contactLeft[1] - y << std::endl;
+      mPlayerController.mWallGrip = true;
+      mPlayerController.mJumping = false;
+      mPlayerController.mFalling = false;
+      mPlayerController.forceFaceLeft();
+      mPlayerController.mWallLeft = true;
+      mPlayerController.mClearWallLeft = false;
+    }
+  }
+  else
+  {
+    mPlayerController.mWallLeft = false;
+  }
+  if (PhysicsLevel2D::contactLeft[0] > PhysicsLevel2D::contactLeft[1])
+  {
+    // if (mPlayerController.mClearWallLeft == false)
+    // {
+    //   std::cout << "Clear Left " << std::endl;
+    //   std::cout <<"Clear Left " << PhysicsLevel2D::contactLeft[0] - y << " "  << PhysicsLevel2D::contactLeft[1] - y << std::endl;
+    // }
+    mPlayerController.mClearWallLeft = true;
+  }
+
+  if (PhysicsLevel2D::contactRight[0] - y <= -6 && PhysicsLevel2D::contactRight[1] - y >= 8)
+  {
+    if (mPlayerController.mClearWallRight && !mPlayerController.m_cannonAction && (mPlayerController.mFalling || mPlayerController.mJumping))
+    {
+      //std::cout << "Grip Right" << PhysicsLevel2D::contactRight[0] - y << " " << PhysicsLevel2D::contactRight[1] - y << std::endl;
+      mPlayerController.mWallGrip = true;
+      mPlayerController.mJumping = false;
+      mPlayerController.mFalling = false;
+      mPlayerController.forceFaceRight();
+      mPlayerController.mWallRight = true;
+      mPlayerController.mClearWallRight = false;
+    }
+  }
+  else
+  {
+    mPlayerController.mWallRight = false;
+  }
+  if (PhysicsLevel2D::contactRight[0] > PhysicsLevel2D::contactRight[1])
+  {
+    // if (mPlayerController.mClearWallRight == false)
+    // {
+    //   std::cout << "Clear Right " << std::endl;
+    //   std::cout << "Clear Right" << PhysicsLevel2D::contactRight[0] - y << " " << PhysicsLevel2D::contactRight[1] - y << std::endl;
+    // }
+    mPlayerController.mClearWallRight = true;
+  }
+
+  // //
+  // // Manifold Contact Points
+  // //
+  // m_renderQueues[3].clear();
+  // // for (auto& i : PhysicsLevel2D::contactPts)
+  // // {
+  // //   glm::mat4 mvp(1.0);
+  // //   mvp = glm::translate(mvp,
+  // //     glm::vec3(
+  // //       i.x() - 0.5,
+  // //       i.y() - 0.5,
+  // //       7));
+  // //   // mvp = glm::scale(mvp,
+  // //   //   glm::vec3(
+  // //   //     1,
+  // //   //     1,
+  // //   //     1));
+  // //
+  // //   m_renderQueues[3].setTile(1);
+  // //   m_renderQueues[3].setMVP(mvp);
+  // //   m_renderQueues[3].submit();
+  // // }
+  // float x_left = x - 12;
+  // float x_right = x + 12;
+  // float y_top = y + 12;
+  // float y_bottom = y - 12;
+  // {
+  //   float x0 = 0.5 * (PhysicsLevel2D::contactTop[0] + PhysicsLevel2D::contactTop[1]);
+  //   float w = (PhysicsLevel2D::contactTop[1] - PhysicsLevel2D::contactTop[0]);
+  //   glm::mat4 mvp(1.0);
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             x0,
+  //             y_top,
+  //             7));
+  //   mvp = glm::scale(mvp,
+  //     glm::vec3(
+  //       w,
+  //       4,
+  //       1));
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             -0.5,
+  //             -0.5,
+  //             0));
+  //
+  //   m_renderQueues[3].setTile(1);
+  //   m_renderQueues[3].setMVP(mvp);
+  //   m_renderQueues[3].submit();
+  // }
+  // {
+  //   float x0 = 0.5 * (PhysicsLevel2D::contactBottom[0] + PhysicsLevel2D::contactBottom[1]);
+  //   float w = (PhysicsLevel2D::contactBottom[1] - PhysicsLevel2D::contactBottom[0]);
+  //   glm::mat4 mvp(1.0);
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             x0,
+  //             y_bottom,
+  //             7));
+  //   mvp = glm::scale(mvp,
+  //     glm::vec3(
+  //       w,
+  //       4,
+  //       1));
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             -0.5,
+  //             -0.5,
+  //             0));
+  //
+  //   m_renderQueues[3].setTile(1);
+  //   m_renderQueues[3].setMVP(mvp);
+  //   m_renderQueues[3].submit();
+  // }
+  // {
+  //   float y0 = 0.5 * (PhysicsLevel2D::contactLeft[0] + PhysicsLevel2D::contactLeft[1]);
+  //   float h = (PhysicsLevel2D::contactLeft[1] - PhysicsLevel2D::contactLeft[0]);
+  //   glm::mat4 mvp(1.0);
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             x_left,
+  //             y0,
+  //             7));
+  //   mvp = glm::scale(mvp,
+  //     glm::vec3(
+  //       4,
+  //       h,
+  //       1));
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             -0.5,
+  //             -0.5,
+  //             0));
+  //
+  //   m_renderQueues[3].setTile(1);
+  //   m_renderQueues[3].setMVP(mvp);
+  //   m_renderQueues[3].submit();
+  // }
+  // {
+  //   float y0 = 0.5 * (PhysicsLevel2D::contactRight[0] + PhysicsLevel2D::contactRight[1]);
+  //   float h = (PhysicsLevel2D::contactRight[1] - PhysicsLevel2D::contactRight[0]);
+  //   glm::mat4 mvp(1.0);
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             x_right,
+  //             y0,
+  //             7));
+  //   mvp = glm::scale(mvp,
+  //     glm::vec3(
+  //       4,
+  //       h,
+  //       1));
+  //   mvp = glm::translate(mvp,
+  //           glm::vec3(
+  //             -0.5,
+  //             -0.5,
+  //             0));
+  //
+  //   m_renderQueues[3].setTile(1);
+  //   m_renderQueues[3].setMVP(mvp);
+  //   m_renderQueues[3].submit();
+  // }
+  // mTexPickup.bind();
+  // m_renderQueues[3].draw(rs);
+}
+
+
+void Screen1::prestart(RenderSystem* rs)
+{
+  rs->setCameraPos(
+    glm::vec3(mCameraPos2.x, mCameraPos2.y, 200),
+    glm::vec3(mCameraPos2.x, mCameraPos2.y, 0),
+    glm::vec3(0, 1, 0));
 }
 
 
@@ -338,10 +527,13 @@ void Screen1::init(const std::string& filename)
 {
   mTexGround.loadPng("data/img/Terrain.png");
   mTexPickup.loadPng("data/box1.png");
+  mTexBack.loadPng("data/img/Brown.png");
   mTexCollectEffect.loadPng("data/1_magicspell_spritesheet.png");
 
-  mLevel.init("data/level_1.tmx", "data/img/Terrain.png", 420.f);
-  mLevel.mPhysicsLevel.addDynamic(160, 1209, 24, 24);
+  //mLevel.init("data/level_1.tmx", "data/img/Terrain.png", 420.f);
+  //mLevel.mPhysicsLevel.addDynamic(160, 1209, 24, 24);
+  mLevel.init("data/level_3.tmx", "data/img/Terrain.png", 420.f);
+  mLevel.mPhysicsLevel.addDynamic(160, 160, 24, 24);
 
   float x = 160;
   float y = 160;
@@ -357,7 +549,7 @@ void Screen1::init(const std::string& filename)
 
   // Generate Render Queues
   m_renderQueues.resize(0);
-  size_t n = 3;
+  size_t n = 4;
   m_renderQueues.resize(n);
 
   m_renderQueues[0].x_res = 22;//mLevel.getMap()->tilewidth;
@@ -368,6 +560,8 @@ void Screen1::init(const std::string& filename)
   m_renderQueues[1].setSheet(1, 1);
 
   m_renderQueues[2].setSheet(9, 9);
+
+  m_renderQueues[3].setSheet(1, 1);
 
   //std::cout << mLevel.getMap()->width << ", " << mLevel.getMap()->height << std::endl;
 
@@ -445,6 +639,28 @@ void Screen1::init(const std::string& filename)
         m_renderQueues[0].setMVP(mvp);
         m_renderQueues[0].submit();
       }
+
+      // background
+      if (i % 4 == 0 && j % 4 == 0)
+      {
+        glm::mat4 mvp(1.0);
+
+        mvp = glm::translate(mvp,
+          glm::vec3(
+            i * mLevel.getMap()->tilewidth,
+            j * mLevel.getMap()->tileheight,
+            z - 10));
+
+        mvp = glm::scale(mvp,
+          glm::vec3(
+            64,
+            64,
+            1));
+
+        m_renderQueues[3].setTile(1);
+        m_renderQueues[3].setMVP(mvp);
+        m_renderQueues[3].submit();
+      }
     }
   }
   //std::cout << "finish" << std::endl;
@@ -461,37 +677,30 @@ int Screen1::keyCallback(int key, int scancode, int action, int mods)
   {
     if (key == GLFW_KEY_LEFT)
     {
-      mPlayerController.moveLeft();
+      //mPlayerController.moveLeft();
+      mPlayerController.wantsToMoveLeft();
     }
     if (key == GLFW_KEY_RIGHT)
     {
-      mPlayerController.moveRight();
+      mPlayerController.wantsToMoveRight();
     }
     if (key == GLFW_KEY_X)
     {
-      // Ground Jump
-      if (mStateValues->getValue("grounded").flags == 1)
-      {
-        mPlayerController.jump();
-      }
-
-      // Wall Jump
-      if (mPlayerController.mWallGrip)
-      {
-        mPlayerController.jump();
-        //mPlayerController.mWallGrip = false;
-      }
+      mPlayerController.wantsToJump();
     }
 
-    if (key == GLFW_KEY_Z && stamina >= 1.f)
+    if (key == GLFW_KEY_Z)// && stamina >= 1.f)
     {
-      if (!(mPlayerController.mFalling || mPlayerController.mJumping || mPlayerController.mWallGrip))
-      {
-        mPlayerController.m_actionCharge = true;
-        mPlayerController.actionDir = 0.f;
-        mPlayerController.moveRight2();
-        mPlayerController.moveLeft2();
-      }
+      // if (!(mPlayerController.mFalling || mPlayerController.mJumping || mPlayerController.mWallGrip))
+      // {
+      //   mPlayerController.m_actionCharge = true;
+      //   mPlayerController.actionDir = 0.f;
+      //   mPlayerController.moveRight2();
+      //   mPlayerController.moveLeft2();
+      // }
+      mPlayerController.actionDir = 0.f;
+      if (stamina >= 1.f)
+        mPlayerController.wantsToAction();
     }
   }
 
@@ -502,11 +711,15 @@ int Screen1::keyCallback(int key, int scancode, int action, int mods)
   {
     if (key == GLFW_KEY_LEFT)
     {
-      mPlayerController.moveLeft2();
+      mPlayerController.wantsToStop();
     }
     if (key == GLFW_KEY_RIGHT)
     {
-      mPlayerController.moveRight2();
+      mPlayerController.wantsToStop();
+    }
+    if (key == GLFW_KEY_DOWN)
+    {
+      mPlayerController.wantsToDrop();
     }
 
     if (key == GLFW_KEY_Z)
@@ -521,6 +734,49 @@ int Screen1::keyCallback(int key, int scancode, int action, int mods)
       mPlayerController.m_actionCharge = false;
     }
   }
+
+  return 0;
+}
+
+
+int Screen1::gamepadUpdate(double x, double y, int a, int b)
+{
+  if (x < -0.5) mPlayerController.wantsToMoveLeft();
+  else if (x > 0.5) mPlayerController.wantsToMoveRight();
+  else mPlayerController.wantsToStop();
+
+  if (y > 0.5) mPlayerController.wantsToDrop();
+
+  static int A = 0;
+  if (a)
+  {
+    if (A == 0)
+    {
+      mPlayerController.wantsToJump();
+      A = 1;
+    }
+  }
+  else A = 0;
+
+  static int B = 0;
+  if (b && !B)
+  {
+    mPlayerController.actionDir = 0.f;
+    if (stamina >= 1.f)
+      mPlayerController.wantsToAction();
+  }
+  if (B && !b)
+  {
+    if (mPlayerController.m_actionCharge) // !
+    {
+      stamina = 0.f;
+      mLevel.mPhysicsLevel.jumpLaunchDynamic(glm::radians(mPlayerController.actionDir)); // Action here
+      mPlayerController.setFreeFloatMode();
+      mPlayerController.m_cannonAction = true;
+    }
+    mPlayerController.m_actionCharge = false;
+  }
+  B = b;
 
   return 0;
 }
@@ -555,6 +811,10 @@ int Screen1::drawUI()
 	// 	ImGui::Text("wall left");
 	// if (wallRight)
 	// 	ImGui::Text("wall right");
+
+  // ???
+  // mPlayerController.mWallLeft = false;
+  // mPlayerController.mWallRight = false;
 
   //
   // Game UI

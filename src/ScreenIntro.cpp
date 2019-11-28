@@ -53,6 +53,17 @@ int ScreenIntro::keyCallback(int key, int scancode, int action, int mods)
 }
 
 
+int ScreenIntro::gamepadUpdate(double x, double y, int a, int b)
+{
+  if (a || b)
+  {
+    mTimer -= 0.2f;
+  }
+
+  return 0;
+}
+
+
 int ScreenIntro::drawUI()
 {
   float timer = 10.f - mTimer;

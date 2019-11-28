@@ -1,5 +1,7 @@
 #include "PlayerController.h"
 #include "RenderSystem.h"
+#include <stdio.h>
+#include <iostream>
 
 
 PlayerController::PlayerController()
@@ -36,6 +38,82 @@ PlayerController::~PlayerController()
 }
 
 
+void PlayerController::wantsToMoveLeft()
+{
+  if (mWallGrip) return;
+  mFacingRight = false;
+  mLeft = true;
+  // if (m_actionCharge)
+  // {
+  //   m_actionChargeLeft = 1;
+  // }
+}
+
+
+void PlayerController::wantsToMoveRight()
+{
+  if (mWallGrip) return;
+  mFacingRight = true;
+  mRight = true;
+  // if (m_actionCharge)
+  // {
+  //   m_actionChargeRight = 1;
+  // }
+}
+
+
+void PlayerController::wantsToStop()
+{
+  mLeft = false;
+  mRight = false;
+  // m_actionChargeRight = 0;
+  // m_actionChargeLeft = 0;
+}
+
+
+int PlayerController::getJump()
+{
+  if (m_actionCharge) return 0;
+
+  if (mJump)
+  {
+    mJump = 0;
+    return 1;
+  }
+  return 0;
+}
+
+
+void PlayerController::wantsToJump()
+{
+  if (mGrounded && !mFalling && !mJumping)
+  {
+    mJump = true;
+    mGrounded = false;
+  }
+  if (mWallGrip)
+  {
+    mJump = true;
+    mWallGrip = false;
+  }
+}
+
+
+void PlayerController::wantsToDrop()
+{
+  mWallGrip = false;
+}
+
+
+void PlayerController::wantsToAction()
+{
+  if (mGrounded)
+  {
+    m_actionCharge = true;
+  }
+}
+
+
 void PlayerController::setPos(float x, float y)
 {
     mX = x;
@@ -57,58 +135,30 @@ void PlayerController::forceFaceRight()
 }
 
 
-void PlayerController::moveLeft()
-{
-  if (m_actionCharge)
-  {
-    m_actionChargeLeft = true;
-    return;
-  }
-
-  mLeft = true;
-  mFacingRight = false;
-
-  if (mWallGrip && mWallRight) mWallGrip = false;
-}
-
-
-void PlayerController::moveRight()
-{
-  if (m_actionCharge)
-  {
-    m_actionChargeRight = true;
-    return;
-  }
-
-
-  mRight = true;
-  mFacingRight = true;
-
-  if (mWallGrip && mWallLeft) mWallGrip = false;
-}
-
-
-void PlayerController::moveLeft2() // release
-{
-  m_actionChargeLeft = false;
-
-  mLeft = false;
-  if (mRight) mFacingRight = true;
-}
-
-
-void PlayerController::moveRight2() // release
-{
-  m_actionChargeRight = false;
-
-  mRight = false;
-  if (mLeft) mFacingRight = false;
-
-}
-
-
 void PlayerController::draw(RenderSystem* rs, float dt)
 {
+    //
+    // Player Controls (Action)
+    //
+    if (m_actionCharge)
+    {
+      if (mLeft && !mRight)
+      {
+        actionDir -= 270.0 * dt;
+      }
+      if (mRight && !mLeft)
+      {
+        actionDir += 270.0 * dt;
+      }
+      if (actionDir < -81.0f) actionDir = -81.f;
+      if (actionDir >  81.0f) actionDir =  81.f;
+    }
+
+  //
+  // Updates...
+  //
+  mGrounded = !(mJumping || mFalling || mWallGrip);
+
   //
   // Set character sprite frame
   //

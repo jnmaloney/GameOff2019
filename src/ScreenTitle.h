@@ -16,6 +16,7 @@ public:
   void init(const std::string& filename);
 
   int keyCallback(int key, int scancode, int action, int mods);
+  int gamepadUpdate(double x, double y, int a, int b);
   int drawUI();
 
 protected:
@@ -23,5 +24,6 @@ protected:
   Texture mTexTitle;
 
   bool mInfo = false;
+  bool mNotInfo = true;
 
 };

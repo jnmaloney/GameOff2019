@@ -15,44 +15,37 @@ public:
 
   void setPos(float x, float y);
 
-  void moveLeft();
-  void moveRight();
-
-  void moveLeft2();
-  void moveRight2();
+  // Controls
+  void wantsToMoveLeft();
+  void wantsToMoveRight();
+  void wantsToStop();
+  void wantsToJump();
+  void wantsToDrop();
+  void wantsToAction();
 
   void draw(RenderSystem* rs, float timer);
 
-  void jump() { mJump = 1; }
-
   int getDir()
   {
+    if (m_actionCharge) return 0;
     if (mRight && !mLeft) return 1;
     if (mLeft && !mRight) return -1;
     return 0;
   }
 
-  int getJump()
-  {
-    if (m_actionCharge) return 0;
-
-    if (mJump)
-    {
-      mJump = 0;
-      return 1;
-    }
-    return 0;
-  }
+  int getJump();
 
   bool mJumping = false;
   bool mFalling = false;
   bool mWallRight = false;
   bool mWallLeft = false;
   bool mWallGrip = false;
+  bool mClearWallLeft = true;
+  bool mClearWallRight = true;
 
   bool m_actionCharge = false;
-  bool m_actionChargeLeft = false;
-  bool m_actionChargeRight = false;
+  // bool m_actionChargeLeft = false;
+  // bool m_actionChargeRight = false;
   float actionDir = 0.f;
 
   // Player keeps moving with no input

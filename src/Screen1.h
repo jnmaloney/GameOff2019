@@ -19,20 +19,27 @@ public:
   void init(const std::string& filename);
 
   int keyCallback(int key, int scancode, int action, int mods);
+  int gamepadUpdate(double x, double y, int a, int b);
 
   int drawUI();
 
   TileLevel mLevel;
+
+
+    void prestart(RenderSystem* rs);
+
 
 protected:
 
   Texture mTexGround;
   Texture mTexPickup;
   Texture mTexCollectEffect;
+  Texture mTexBack;
   PlayerController mPlayerController;
 
   glm::vec3 mCameraHistory[4];
   glm::vec3 mCameraPos;
+  glm::vec3 mCameraPos2;
 
   int m_score = 0;
   float m_timer = 0.f;
